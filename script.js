@@ -29,18 +29,50 @@ if (document.getElementById("verbs")) {
 
     document.getElementById("title").textContent = title;
 
+    const prefixColors = {
+      ab: "#e8f5e9",
+      an: "#e3f2fd",
+      auf: "#e8eaf6",
+      aus: "#e0f2f1",
+      dar: "#f3e5f5",
+      her: "#fbe9e7",
+      ein: "#fff8e1",
+      fest: "#fce4ec",
+      um: "#eceff1",
+      vor: "#e1f5fe",
+      zurück: "#f3e5f5",
+      zusammen: "#e0f2f1",
+      nach: "#fce4ec",
+      bei: "#f1f8e9",
+      bereit: "#e0f7fa",
+      be: "#efebe9",
+      ent: "#fce4ec",
+      ver: "#f5f5f5",
+      zu: "#efebe9"
+    };
+
+    const sepLabel = {
+      分離: `<div class="label-trennbar">🟩 分離（trennbar）</div>`,
+      非分離: `<div class="label-untrennbar">🟥 非分離（untrennbar）</div>`,
+      両方: `<div class="label-teils">🟨 両方（teils trennbar）</div>`
+    };
+
     const listHTML = filtered.map(item => {
       const prefix = item["接頭辞"] || "";
       const prefixMeaning = item["接頭辞基本意味"] || "";
       const core = item["基幹"] || "";
       const composition = prefix && core ? `${prefix} + ${core}` : "";
+      const bgColor = prefixColors[prefix] || "#f7f7f7";
+      const sep = sepLabel[item["分離性"]] || "";
 
       return `
         <div class="card">
-          <div class="header">
+          <div class="card-header" style="background-color:${bgColor};">
             <h2>${item["単語"]}</h2>
             <div class="etymology">${composition}</div>
           </div>
+
+          ${sep}
 
           <div class="meaning-jp">${item["意味"]}</div>
           <div class="meaning-en">${item["英訳"]}</div>
