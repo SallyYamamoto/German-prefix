@@ -25,12 +25,19 @@ if (document.getElementById("prefixes")) {
       }
     });
 
-    // --- ソートしてHTML生成 ---
+    // --- ラベルとアイコン設定 ---
+    const labels = {
+      分離: { icon: "🟩", text: "trennbar" },
+      非分離: { icon: "🟥", text: "untrennbar" },
+      両方: { icon: "🟨", text: "teils trennbar" }
+    };
+
+    // --- アルファベット順に並べてHTML生成 ---
     const sectionHTML = Object.entries(groups).map(([key, set]) => {
       const sorted = [...set].sort((a, b) => a.localeCompare(b, 'de'));
       if (sorted.length === 0) return "";
       return `
-        <h3>${key}接頭辞</h3>
+        <h3>${labels[key].icon} ${labels[key].text}</h3>
         <ul>
           ${sorted.map(p => `<li><a href="list.html?prefix=${p}">${p}</a></li>`).join("")}
         </ul>
@@ -39,7 +46,7 @@ if (document.getElementById("prefixes")) {
 
     document.getElementById("prefixes").innerHTML = "<h2>接頭辞</h2>" + sectionHTML;
 
-    // --- 基幹部分（従来通り） ---
+    // --- 基幹部分（アルファベット順） ---
     const roots = [...new Set(data.map(d => d["基幹"]))].sort((a, b) => a.localeCompare(b, 'de'));
     const rootHTML =
       "<h2>基幹部分</h2><ul>" +
