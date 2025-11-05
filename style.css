@@ -1,146 +1,59 @@
-/* === 全体構造 === */
-/* （分析内容：背景は白、余白を取り、印刷物のような清潔感） */
 body {
   font-family: 'Hiragino Sans', 'Meiryo', 'Yu Gothic', sans-serif;
-  color: #000;
-  background-color: #fff;
   margin: 0;
   padding: 20px;
+  background-color: #fff;
+  color: #222;
   line-height: 1.5;
 }
 
-/* === ページヘッダー === */
-/* （分析内容：タイトルは中央揃え・下線付き・シンプル） */
-.page-header {
+.header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
-.page-header h1 {
+
+h1 {
   font-size: 2em;
-  font-weight: 600;
-  border-bottom: 2px solid #007bff;
+  border-bottom: 2px solid #2e7d32;
   display: inline-block;
   padding-bottom: 5px;
-  margin-bottom: 5px;
 }
-.back-link {
-  color: #007bff;
+
+.subtitle {
+  color: #666;
+  font-size: 0.95em;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+h2 {
+  color: #00695c;
+}
+
+h3 {
+  margin-top: 15px;
+  color: #333;
+}
+
+.prefix-list a, .root-list a {
+  color: #00796b;
   text-decoration: none;
-  font-size: 0.9em;
+  font-weight: 500;
 }
-.back-link:hover {
+
+.prefix-list a:hover, .root-list a:hover {
   text-decoration: underline;
 }
 
-/* === 2列グリッドレイアウト === */
-/* （分析内容：カードを2枚ずつ横に並べ、紙面のような整列感を出す） */
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-  gap: 30px;
-  justify-items: center;
-  padding: 20px;
-}
-
-/* === 単語カード全体 === */
-/* （分析内容：白背景＋影付き＋柔らかい角丸、単語1枚のカード表現） */
-.verb-card {
-  width: 100%;
-  max-width: 420px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  padding: 25px;
-  transition: transform 0.2s ease;
-}
-.verb-card:hover {
-  transform: translateY(-4px);
-}
-
-/* === ヘッダー部 === */
-/* （分析内容：中央揃え・単語は大きく下線・接頭辞+基幹は青斜体） */
-.card-header {
+footer {
   text-align: center;
-  margin-bottom: 15px;
-}
-.card-header h2 {
-  font-size: 2em;
-  font-weight: 500;
-  border-bottom: 1px solid #000;
-  display: inline-block;
-  margin: 0 0 4px 0;
-  padding-bottom: 3px;
-}
-.etymology {
-  font-size: 1.1em;
-  color: #007bff;
-  font-style: italic;
-}
-
-/* === 意味部分 === */
-/* （分析内容：日本語の意味は太字・大きめ、英語は斜体） */
-.meaning-jp {
-  font-size: 1.2em;
-  font-weight: bold;
-  margin: 20px 0 5px 0;
-}
-.meaning-en {
-  font-style: italic;
-  font-size: 1em;
-  margin-bottom: 15px;
-}
-
-/* === 詳細情報セクション === */
-/* （分析内容：構成・語感・構文・活用を2カラムで整列） */
-.detail-item {
-  display: flex;
-  margin-bottom: 5px;
-}
-.detail-label {
-  width: 80px;
-  color: #333;
-}
-.detail-value {
-  flex-grow: 1;
-}
-.german-term {
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-style: italic;
-}
-
-/* === 例文セクション === */
-/* （分析内容：左線＋右本文構造。紙面のような区切り） */
-.example-section {
-  margin-top: 25px;
-}
-.example-box {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 15px;
-}
-.vertical-line {
-  border-left: 1px solid #000;
-  margin-right: 10px;
-  min-height: 2.5em;
-}
-.german-sentence {
-  margin: 0;
-}
-.japanese-translation {
-  font-size: 0.9em;
+  font-size: 0.85em;
   color: #555;
-  margin: 0;
-}
-
-/* === 派生語 === */
-/* （分析内容：🔤アイコン＋名詞形が横並び、最後に柔らかい余白） */
-.noun-form {
-  display: flex;
-  align-items: center;
-  margin-top: 15px;
-}
-.abc-icon {
-  font-size: 1.3em;
-  color: #007bff;
-  margin-right: 5px;
+  margin-top: 40px;
 }
