@@ -2,17 +2,33 @@ console.log("script.js loaded");
 
 const JSON_URL = "verbs.json";
 
-// JSON読み込み
 async function fetchData() {
   const res = await fetch(JSON_URL);
-  const data = await res.json();
-  console.log(`verbs.json fetched: ${data.length} entries`);
-  return data;
+  return await res.json();
 }
 
-// URLパラメータ取得
 function getQueryParam(name) {
   return new URLSearchParams(window.location.search).get(name);
+}
+
+/* ========== ✅ トップページ用(index.html) ========== */
+if (document.getElementById("prefixes")) {
+  document.getElementById("prefixes").innerHTML = `<p>読み込み中...</p>`;
+  document.getElementById("roots").innerHTML = `<p>読み込み中...</p>`;
+
+  fetchData().then(data => {
+    const prefixes = [...new Set(data.map(d => d["接頭辞"]))].sort((a,b)=>a.localeCompare(b,'de'));
+    const roots = [...new Set(data.map(d => d["基幹"]))].sort((a,b)=>a.localeCompare(b,'de'));
+
+    const prefixLinks = prefixes.map(p => `<a href="list.html?prefix=${p}">${p}</a>`).join(" / ");
+    const rootLinks = roots.map(r => `<a href="list.html?root=${r}">${r}</a>`).join(" / ");
+
+    document.getElementById("prefixes").innerHTML = `<h2>接頭辞</h2>${prefixLinks}`;
+    document.getElementById("roots").innerHTML = `<h2>基幹部分</h2>${rootLinks}`;
+  }).catch(err => {
+    console.error(err);
+    document.getElementById("prefixes").innerHTML = `<p>データの読み込みに失敗しました。</p>`;
+  });
 }
 
 // list.html（個別一覧ページ）
