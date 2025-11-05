@@ -1,161 +1,116 @@
-const JSON_URL = "./verbs.json";
-
-async function fetchData() {
-  const res = await fetch(JSON_URL);
-  if (!res.ok) throw new Error("JSONの読み込みに失敗しました");
-  return await res.json();
+body {
+  font-family: 'Hiragino Sans', 'Meiryo', 'Yu Gothic', sans-serif;
+  color: #000;
+  background: #fff;
+  margin: 0;
+  padding: 20px;
+  line-height: 1.5;
 }
 
-function getQueryParam(name) {
-  return new URLSearchParams(window.location.search).get(name);
+/* 一覧ページ */
+.columns {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  padding: 1rem;
+}
+.prefix-grid, .root-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+}
+.prefix-grid a, .root-grid a {
+  text-decoration: none;
+  color: #007bff;
+}
+.prefix-grid a:hover, .root-grid a:hover {
+  text-decoration: underline;
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const prefixesEl = document.getElementById("prefixes");
-  const rootsEl = document.getElementById("roots");
-  const verbsEl = document.getElementById("verbs");
+/* 各カード（list.html） */
+.verb-card {
+  max-width: 520px;
+  margin: 40px auto;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  background-color: #fff;
+}
+.header {
+  text-align: center;
+  margin-bottom: 15px;
+}
+h1 {
+  font-size: 2.4em;
+  font-weight: 500;
+  margin: 0 0 4px 0;
+  display: inline-block;
+  border-bottom: 1px solid #000;
+  padding-bottom: 3px;
+}
+.etymology {
+  font-size: 1.1em;
+  color: #007bff;
+  font-style: italic;
+}
 
-  const data = await fetchData().catch(err => {
-    console.error(err);
-    if (prefixesEl) prefixesEl.innerHTML = "読み込みに失敗しました。";
-    if (verbsEl) verbsEl.innerHTML = "データの読み込みに失敗しました。";
-    return null;
-  });
+/* 意味 */
+.meaning-jp {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin: 18px 0 6px 0;
+}
+.meaning-en {
+  font-style: italic;
+  margin-bottom: 20px;
+}
 
-  if (!data) return;
+/* 詳細 */
+.detail-item {
+  display: flex;
+  margin-bottom: 6px;
+}
+.detail-label {
+  width: 80px;
+  font-weight: normal;
+  margin-right: 10px;
+}
+.detail-value {
+  flex: 1;
+}
+.german-term {
+  font-family: 'Consolas', monospace;
+  font-style: italic;
+}
 
-  // --- トップページ(index.html) ---
-  if (prefixesEl && rootsEl) {
-    const groups = { 分離: new Set(), 非分離: new Set(), 両方: new Set() };
+/* 例文 */
+.example-section {
+  margin-top: 25px;
+}
+.example-box {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+.vertical-line {
+  border-left: 1px solid #000;
+  margin-right: 10px;
+  min-height: 2.5em;
+}
+.japanese-translation {
+  font-size: .9em;
+  color: #333;
+  margin: 0;
+  line-height: 1.2;
+}
 
-    data.forEach(d => {
-      if (d["接頭辞"] && d["分離性"]) {
-        groups[d["分離性"]].add(d["接頭辞"]);
-      }
-    });
-
-    const labels = {
-      分離: { icon: "🟩", text: "分離（trennbar）" },
-      非分離: { icon: "🟥", text: "非分離（untrennbar）" },
-      両方: { icon: "🟨", text: "両方（teils trennbar）" }
-    };
-
-    const prefixHTML = Object.entries(groups).map(([type, set]) => {
-      const sorted = [...set].sort((a, b) => a.localeCompare(b, "de"));
-      return `
-        <div class="prefix-section">
-          <h3>${labels[type].icon} ${labels[type].text}</h3>
-          <div class="prefix-grid">
-            ${sorted.map(p => `<a href="list.html?prefix=${p}">${p}</a>`).join(" / ")}
-          </div>
-        </div>`;
-    }).join("");
-
-    prefixesEl.innerHTML = `<h2>接頭辞</h2>${prefixHTML}`;
-
-    const roots = [...new Set(data.map(d => d["基幹"]))].sort((a, b) => a.localeCompare(b, "de"));
-    const rootsHTML = `<h2>基幹部分</h2><div class="root-grid">${roots.map(r =>
-      `<a href="list.html?root=${r}">${r}</a>`).join(" / ")}</div>`;
-    rootsEl.innerHTML = rootsHTML;
-  }
-
-  // --- list.html ---
-  if (verbsEl) {
-    const prefix = getQueryParam("prefix");
-    const root = getQueryParam("root");
-
-    let filtered = [];
-    let title = "";
-
-    if (prefix) {
-      filtered = data.filter(d => d["接頭辞"] === prefix);
-      title = `接頭辞: ${prefix}`;
-    } else if (root) {
-      filtered = data.filter(d => d["基幹"] === root);
-      title = `基幹部分: ${root}`;
-    }
-
-    document.getElementById("title").textContent = title;
-
-    const prefixColors = {
-      ab: "#e8f5e9",
-      an: "#e3f2fd",
-      auf: "#e8eaf6",
-      aus: "#e0f2f1",
-      dar: "#f3e5f5",
-      her: "#fbe9e7",
-      ein: "#fff8e1",
-      fest: "#fce4ec",
-      um: "#eceff1",
-      vor: "#e1f5fe",
-      zurück: "#f3e5f5",
-      zusammen: "#e0f2f1",
-      nach: "#fce4ec",
-      bei: "#f1f8e9",
-      bereit: "#e0f7fa",
-      be: "#efebe9",
-      ent: "#fce4ec",
-      ver: "#f5f5f5",
-      zu: "#efebe9"
-    };
-
-    const sepLabel = {
-      分離: `<div class="label-trennbar">🟩 分離（trennbar）</div>`,
-      非分離: `<div class="label-untrennbar">🟥 非分離（untrennbar）</div>`,
-      両方: `<div class="label-teils">🟨 両方（teils trennbar）</div>`
-    };
-
-    const listHTML = filtered.map(item => {
-      const prefix = item["接頭辞"] || "";
-      const prefixMeaning = item["接頭辞基本意味"] || "";
-      const core = item["基幹"] || "";
-      const composition = prefix && core ? `${prefix} + ${core}` : "";
-      const bgColor = prefixColors[prefix] || "#f7f7f7";
-      const sep = sepLabel[item["分離性"]] || "";
-
-      return `
-        <div class="card" style="background: linear-gradient(to right, ${bgColor}, #fff);">
-          <div class="card-header">
-            <h2>${item["単語"]}</h2>
-            <div class="etymology">${composition}</div>
-          </div>
-
-          ${sep}
-
-          <div class="meaning-jp">${item["意味"]}</div>
-          <div class="meaning-en">${item["英訳"]}</div>
-
-          <div class="detail-section">
-            <div><b>構成：</b> ${prefix}（${prefixMeaning}） + ${core}</div>
-            <div><b>語感：</b> ${item["語感"] || ""}</div>
-            <div><b>構文：</b> <i>${item["構文"] || ""}</i></div>
-            <div><b>活用：</b> <i>${item["活用"] || ""}</i></div>
-          </div>
-
-          <div class="example-section">
-            ${item["例文1"] ? `
-              <div class="example-box">
-                <div class="vertical-line"></div>
-                <div>
-                  <p>${item["例文1"]}</p>
-                  <p class="japanese-translation">（${item["日本語訳1"]}）</p>
-                </div>
-              </div>` : ""}
-            ${item["例文2"] ? `
-              <div class="example-box">
-                <div class="vertical-line"></div>
-                <div>
-                  <p>${item["例文2"]}</p>
-                  <p class="japanese-translation">（${item["日本語訳2"]}）</p>
-                </div>
-              </div>` : ""}
-          </div>
-
-          ${item["派生語"] ? `<div class="noun-form">🔤 ${item["派生語"]}</div>` : ""}
-        </div>
-      `;
-    }).join("");
-
-    verbsEl.innerHTML = listHTML || "<p>該当する単語がありません。</p>";
-  }
-});
+/* 派生語 */
+.noun-form {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+}
+.abc-icon {
+  color: #007bff;
+  margin-right: 5px;
+}
