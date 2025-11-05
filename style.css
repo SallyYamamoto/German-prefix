@@ -1,0 +1,7 @@
+body { font-family: sans-serif; margin: 20px; }
+.columns { display: flex; justify-content: space-between; }
+.columns div { width: 45%; }
+ul { list-style-type: none; padding: 0; }
+li { margin-bottom: 6px; }
+a { color: #2a6; text-decoration: none; }
+a:hover { text-decoration: underline; }
