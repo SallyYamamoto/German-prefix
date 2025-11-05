@@ -1,0 +1,11 @@
+# _config.yml (ファイルに追加)
+collections:
+  verbs:
+    output: true
+    permalink: /verb/:title/
+  prefixes:
+    output: true
+    permalink: /prefix/:title/
+  stems:
+    output: true
+    permalink: /stem/:title/
