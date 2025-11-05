@@ -1,7 +1,8 @@
-const JSON_URL = "verbs.json";
+const JSON_URL = "./verbs.json";
 
 async function fetchData() {
   const res = await fetch(JSON_URL);
+  if (!res.ok) throw new Error("JSONの読み込みに失敗しました");
   return await res.json();
 }
 
@@ -9,11 +10,57 @@ function getQueryParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
+document.addEventListener("DOMContentLoaded", async () => {
+  const prefixesEl = document.getElementById("prefixes");
+  const rootsEl = document.getElementById("roots");
+  const verbsEl = document.getElementById("verbs");
 
-if (document.getElementById("verbs")) {
-  document.getElementById("verbs").innerHTML = `<p>読み込み中...</p>`;
+  const data = await fetchData().catch(err => {
+    console.error(err);
+    if (prefixesEl) prefixesEl.innerHTML = "読み込みに失敗しました。";
+    if (verbsEl) verbsEl.innerHTML = "データの読み込みに失敗しました。";
+    return null;
+  });
 
-  fetchData().then(data => {
+  if (!data) return;
+
+  // --- トップページ(index.html) ---
+  if (prefixesEl && rootsEl) {
+    const groups = { 分離: new Set(), 非分離: new Set(), 両方: new Set() };
+
+    data.forEach(d => {
+      if (d["接頭辞"] && d["分離性"]) {
+        groups[d["分離性"]].add(d["接頭辞"]);
+      }
+    });
+
+    const labels = {
+      分離: { icon: "🟩", text: "分離（trennbar）" },
+      非分離: { icon: "🟥", text: "非分離（untrennbar）" },
+      両方: { icon: "🟨", text: "両方（teils trennbar）" }
+    };
+
+    const prefixHTML = Object.entries(groups).map(([type, set]) => {
+      const sorted = [...set].sort((a, b) => a.localeCompare(b, "de"));
+      return `
+        <div class="prefix-section">
+          <h3>${labels[type].icon} ${labels[type].text}</h3>
+          <div class="prefix-grid">
+            ${sorted.map(p => `<a href="list.html?prefix=${p}">${p}</a>`).join(" / ")}
+          </div>
+        </div>`;
+    }).join("");
+
+    prefixesEl.innerHTML = `<h2>接頭辞</h2>${prefixHTML}`;
+
+    const roots = [...new Set(data.map(d => d["基幹"]))].sort((a, b) => a.localeCompare(b, "de"));
+    const rootsHTML = `<h2>基幹部分</h2><div class="root-grid">${roots.map(r =>
+      `<a href="list.html?root=${r}">${r}</a>`).join(" / ")}</div>`;
+    rootsEl.innerHTML = rootsHTML;
+  }
+
+  // --- list.html ---
+  if (verbsEl) {
     const prefix = getQueryParam("prefix");
     const root = getQueryParam("root");
 
@@ -67,8 +114,8 @@ if (document.getElementById("verbs")) {
       const sep = sepLabel[item["分離性"]] || "";
 
       return `
-        <div class="card">
-          <div class="card-header" style="background-color:${bgColor};">
+        <div class="card" style="background: linear-gradient(to right, ${bgColor}, #fff);">
+          <div class="card-header">
             <h2>${item["単語"]}</h2>
             <div class="etymology">${composition}</div>
           </div>
@@ -79,57 +126,36 @@ if (document.getElementById("verbs")) {
           <div class="meaning-en">${item["英訳"]}</div>
 
           <div class="detail-section">
-            <div class="detail-item">
-              <span class="detail-label">構成 :</span>
-              <span class="detail-value">${prefix}（${prefixMeaning}） + ${core}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">語感 :</span>
-              <span class="detail-value">${item["語感"] || ""}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">構文 :</span>
-              <span class="detail-value"><span class="german-term">${item["構文"] || ""}</span></span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">活用 :</span>
-              <span class="detail-value"><span class="german-term">${item["活用"] || ""}</span></span>
-            </div>
+            <div><b>構成：</b> ${prefix}（${prefixMeaning}） + ${core}</div>
+            <div><b>語感：</b> ${item["語感"] || ""}</div>
+            <div><b>構文：</b> <i>${item["構文"] || ""}</i></div>
+            <div><b>活用：</b> <i>${item["活用"] || ""}</i></div>
           </div>
 
           <div class="example-section">
             ${item["例文1"] ? `
               <div class="example-box">
                 <div class="vertical-line"></div>
-                <div class="example-content">
-                  <p class="german-sentence">${item["例文1"]}</p>
+                <div>
+                  <p>${item["例文1"]}</p>
                   <p class="japanese-translation">（${item["日本語訳1"]}）</p>
                 </div>
               </div>` : ""}
-
             ${item["例文2"] ? `
               <div class="example-box">
                 <div class="vertical-line"></div>
-                <div class="example-content">
-                  <p class="german-sentence">${item["例文2"]}</p>
+                <div>
+                  <p>${item["例文2"]}</p>
                   <p class="japanese-translation">（${item["日本語訳2"]}）</p>
                 </div>
               </div>` : ""}
           </div>
 
-          ${item["派生語"] ? `
-          <div class="noun-form">
-            <span class="abc-icon">🔤</span>
-            <span class="german-term">${item["派生語"]}</span>
-          </div>` : ""}
+          ${item["派生語"] ? `<div class="noun-form">🔤 ${item["派生語"]}</div>` : ""}
         </div>
       `;
     }).join("");
 
-    document.getElementById("verbs").innerHTML =
-      listHTML || `<p>該当する単語がありません。</p>`;
-  }).catch(err => {
-    document.getElementById("verbs").innerHTML = `<p>データの読み込みに失敗しました。</p>`;
-    console.error(err);
-  });
-}
+    verbsEl.innerHTML = listHTML || "<p>該当する単語がありません。</p>";
+  }
+});
