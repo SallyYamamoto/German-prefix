@@ -1,59 +1,20 @@
 body {
   font-family: 'Hiragino Sans', 'Meiryo', 'Yu Gothic', sans-serif;
-  margin: 0;
-  padding: 20px;
-  background-color: #fff;
-  color: #222;
+  margin: 20px;
   line-height: 1.5;
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
 h1 {
-  font-size: 2em;
   border-bottom: 2px solid #2e7d32;
   display: inline-block;
   padding-bottom: 5px;
 }
 
-.subtitle {
-  color: #666;
-  font-size: 0.95em;
-}
-
-.columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-h2 {
-  color: #00695c;
-}
-
-h3 {
-  margin-top: 15px;
-  color: #333;
-}
-
-.prefix-list a, .root-list a {
+a {
   color: #00796b;
   text-decoration: none;
-  font-weight: 500;
 }
 
-.prefix-list a:hover, .root-list a:hover {
+a:hover {
   text-decoration: underline;
-}
-
-footer {
-  text-align: center;
-  font-size: 0.85em;
-  color: #555;
-  margin-top: 40px;
 }
