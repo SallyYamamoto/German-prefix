@@ -15,7 +15,6 @@ if (document.getElementById("prefixes")) {
   document.getElementById("roots").innerHTML = `<h2>基幹部分</h2><p>読み込み中...</p>`;
 
   fetchData().then(data => {
-    // --- 接頭辞を分離性ごとに分類 ---
     const groups = { 分離: new Set(), 非分離: new Set(), 両方: new Set() };
 
     data.forEach(d => {
@@ -25,14 +24,12 @@ if (document.getElementById("prefixes")) {
       }
     });
 
-    // --- ラベルとアイコン設定 ---
     const labels = {
       分離: { icon: "🟩", text: "trennbar" },
       非分離: { icon: "🟥", text: "untrennbar" },
       両方: { icon: "🟨", text: "teils trennbar" }
     };
 
-    // --- HTML生成 ---
     const sectionHTML = Object.entries(groups).map(([key, set]) => {
       const sorted = [...set].sort((a, b) => a.localeCompare(b, "de"));
       if (sorted.length === 0) return "";
@@ -46,7 +43,6 @@ if (document.getElementById("prefixes")) {
 
     document.getElementById("prefixes").innerHTML = `<h2>接頭辞</h2>${sectionHTML}`;
 
-    // --- 基幹部分 ---
     const roots = [...new Set(data.map(d => d["基幹"]))].sort((a, b) => a.localeCompare(b, "de"));
     const rootHTML = `
       <h2>基幹部分</h2>
@@ -63,7 +59,7 @@ if (document.getElementById("prefixes")) {
 
 // --- 一覧ページ（list.html） ---
 if (document.getElementById("verbs")) {
-  document.getElementById("verbs").innerHTML = `<li>読み込み中...</li>`;
+  document.getElementById("verbs").innerHTML = `<p>読み込み中...</p>`;
 
   fetchData().then(data => {
     const prefix = getQueryParam("prefix");
@@ -82,19 +78,37 @@ if (document.getElementById("verbs")) {
 
     document.getElementById("title").textContent = title;
 
-    const listHTML = filtered.map(item => `
-      <li>
-        <strong>${item["単語"]}</strong> — ${item["意味"]}<br>
-        <em>${item["英訳"]}</em><br>
-        <small>${item["構文"]}</small><br>
-        例：${item["例文1"]}（${item["日本語訳1"]}）<br>
-        <small>${item["派生語"]}</small>
-      </li>
+    const colors = [
+      "#5cb85c", "#0275d8", "#3f51b5", "#009688",
+      "#ba68c8", "#ff7043", "#ff9800", "#f0ad4e",
+      "#d9534f", "#607d8b", "#0288d1", "#8e44ad",
+      "#16a085", "#c2185b", "#6dab6d", "#00796b",
+      "#8d6e63", "#ad4c4c", "#9e9e9e"
+    ];
+
+    const listHTML = filtered.map((item, i) => `
+      <div class="col">
+        <h3 style="background-color:${colors[i % colors.length]};">${item["単語"]}</h3>
+        <div class="section"><b><span>意味</span>：</b> ${item["意味"]}</div>
+        <div class="section"><b><span>英訳</span>：</b> ${item["英訳"]}</div>
+        <div class="section"><b><span>接頭辞</span>：</b> ${item["接頭辞"]}（${item["接頭辞基本意味"] || ""}）</div>
+        <div class="section"><b><span>語感</span>：</b> ${item["語感"] || ""}</div>
+        <div class="section"><b><span>構文</span>：</b> <i>${item["構文"] || ""}</i></div>
+        <div class="section"><b><span>分離性</span>：</b> ${item["分離性"] || ""}</div>
+        <div class="section"><b><span>活用</span>：</b> ${item["活用"] || ""}</div>
+        <div class="section"><b><span>例文</span>：</b><br>
+          ${item["例文1"] || ""}<br>（${item["日本語訳1"] || ""}）<br><br>
+          ${item["例文2"] || ""}<br>（${item["日本語訳2"] || ""}）
+        </div>
+        <div class="section"><b><span>派生語</span>：</b> ${item["派生語"] || ""}</div>
+        <div class="subnote">🔤 <b>対応英単語：</b> <i>${item["対応英単語"] || ""}</i></div>
+      </div>
     `).join("");
 
-    document.getElementById("verbs").innerHTML = listHTML || `<li>該当する単語がありません。</li>`;
+    document.getElementById("verbs").innerHTML =
+      listHTML || `<p>該当する単語がありません。</p>`;
   }).catch(err => {
-    document.getElementById("verbs").innerHTML = `<li>データの読み込みに失敗しました。</li>`;
+    document.getElementById("verbs").innerHTML = `<p>データの読み込みに失敗しました。</p>`;
     console.error(err);
   });
 }
