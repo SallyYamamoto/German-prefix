@@ -1,7 +1,43 @@
-body { font-family: sans-serif; margin: 20px; }
-.columns { display: flex; justify-content: space-between; }
-.columns div { width: 45%; }
-ul { list-style-type: none; padding: 0; }
-li { margin-bottom: 6px; }
-a { color: #2a6; text-decoration: none; }
-a:hover { text-decoration: underline; }
+body {
+  font-family: "Noto Sans JP", sans-serif;
+  margin: 20px;
+  background: #fafafa;
+  color: #222;
+}
+
+h1, h2 {
+  color: #2a6;
+}
+
+.columns {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.columns div {
+  width: 45%;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 6px;
+  line-height: 1.6;
+}
+
+a {
+  color: #0a7;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
